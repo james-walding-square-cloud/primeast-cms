@@ -6,15 +6,18 @@
         <h1 class="text-center">{{$associate->first_name . ' ' . $associate->last_name}}</h1>
         <hr>
     </div>
-    <form action="/admin/associate/profileUpdate/{{$associate->user_id}}" method="post">
+    <form action="/admin/associate/profileUpdate/{{$associate->user_id}}" method="post" enctype="multipart/form-data">
         {{ method_field('PUT') }}
         {{ csrf_field() }}
         <fieldset>
             <div class="row m-0 text-white">
-                <div class="col-3 profile-blue">
-                    <div id="profile-image" class="w-100">
-
-                    </div>
+                <div class="col-3 profile-blue text-center py-2">
+                    @if(isset($associate->associateData->image_url))
+                        <img src="{{url('profile_images/'.$associate->associateData->image_url)}}" alt="">
+                    @endif
+                        <div id="profile-image" class="w-100 pt-5">
+                            <input name="image" id="image" type="file">
+                        </div>
                     <div class="w-100 row m-0 py-2">
                         <div class="col-6">
                             <input type="text" name='firstName' class="form-control" id="firstName" value="{{$associate->first_name}}" placeholder="{{$associate->first_name}}">

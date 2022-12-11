@@ -5,8 +5,10 @@
     "license": "MIT",
     "type": "project",
     "require": {
-        "php": ">=5.6.4",
+        "php": ">=7.0.33",
+        "barryvdh/laravel-dompdf": "0.8.2",
         "laravel/framework": "5.4.*",
+        "laravel/scout": "^7.1",
         "laravel/tinker": "~1.0"
     },
     "require-dev": {

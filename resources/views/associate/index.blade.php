@@ -2,32 +2,47 @@
 
 @section('content')
     <div>
-        <div class="search p-5 row text-center">
-            <div class="col">
-                <label for="searchName" class="form-label">
-                    Name
-                </label>
-                <input type="text" name="searchName" id="searchName" class="form-control">
-            </div>
-            <div class="col">
-                <label for="searchLanguage" class="form-label">
-                    Language
-                </label>
-                <input type="text" name="searchLanguage" id="searchLanguage" class="form-control">
-            </div>
-            <div class="col">
-                <label for="searchSkills" class="form-label">
-                    Skills and Qualifications
-                </label>
-                <input type="text" name="searchSkills" id="searchSkills" class="form-control">
-            </div>
-            <div class="col">
-                <label for="searchLocation" class="form-label">
-                    Location
-                </label>
-                <input type="text" name="searchLocation" id="searchLocation" class="form-control">
-            </div>
-        </div>
+        <form action="/admin/associate/index">
+            <fieldset>
+                <div class="search p-5 row text-center">
+                    <div class="col">
+                        <label for="searchName" class="form-label">
+                            Name
+                        </label>
+                        <input type="text" name="searchName" id="searchName" class="form-control">
+                    </div>
+                    <div class="col">
+                        <label for="searchLanguage" class="form-label">
+                            Language
+                        </label>
+                        <input type="text" name="searchLanguage" id="searchLanguage" class="form-control">
+                    </div>
+                    <div class="col">
+                        <label for="searchSkills" class="form-label">
+                            Skills and Qualifications
+                        </label>
+                        <input type="text" name="searchSkills" id="searchSkills" class="form-control">
+                    </div>
+                    <div class="col">
+                        <label for="searchLocation" class="form-label">
+                            Location
+                        </label>
+                        <input type="text" name="searchLocation" id="searchLocation" class="form-control">
+                    </div>
+                    <div class="col">
+                        <a href="/admin/associate/index">
+                            <label>
+
+                            </label>
+                            <button class="btn btn-success w-100">
+                                Search
+                            </button>
+                        </a>
+                    </div>
+                </div>
+            </fieldset>
+        </form>
+
         <div class="results py-2 ">
             <div class="w-100 d-flex justify-content-center align-items-middle">
                 <div>
@@ -73,9 +88,11 @@
                                     </a>
                                 </div>
                                 <div class="col">
-                                    <button class="btn btn-success w-100">
-                                        view
-                                    </button>
+                                    <a href="/admin/associate/profilePDF/{{$associate->user_id}}">
+                                        <button class="btn btn-success w-100">
+                                            view
+                                        </button>
+                                    </a>
                                 </div>
                                 <div class="col">
                                     <button class="btn btn-danger w-100">

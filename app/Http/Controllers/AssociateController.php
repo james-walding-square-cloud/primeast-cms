@@ -6,11 +6,44 @@ use App\Models\Associate;
 use App\Models\AssociateData;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use \PDF;
 
 class AssociateController extends Controller
 {
-    public function index() {
-        $associate = Associate::paginate(10);
+    public function index(Request $request) {
+        if (!empty($request->all())) {
+            $name = $request->searchName ?? null;
+            $location = $request->searchLocation ?? null;
+            $skills = $request->searchSkills ?? null;
+            $language = $request->searchLanguage ?? null;
+            $associate = Associate::when($language != null, function ($query) use ($language) {
+                    $query->where('known_languages', 'like', "%$language%");
+                    return $query;
+                })
+                ->when($name != null ,function ($query) use ($name) {
+                    $query->where('first_name', 'like', "%$name%")
+                        ->orWhere('last_name', 'like', "%$name%");
+                    return $query;
+                })
+                ->when($skills != null, function ($query) use ($skills){
+                    $query->where('search_primary_skillset', 'like', "%$skills%")
+                        ->orWhere('search_secondary_skillsets', 'like', "%$skills%");
+                    return $query;
+                })
+                ->when($location != null, function ($query) use ($location) {
+                    $query->where('address1', 'like', "%$location%")
+                        ->orWhere('address2', 'like', "%$location%")
+                        ->orWhere('address3', 'like', "%$location%")
+                        ->orWhere('city', 'like', "%$location%")
+                        ->orWhere('county', 'like', "%$location%")
+                        ->orWhere('country', 'like', "%$location%")
+                        ->orWhere('postcode', 'like', "%$location%");
+                    return $query;
+                })
+                ->paginate(10);
+        } else {
+            $associate = Associate::paginate(10);
+        }
 
         return view('associate/index', [
             'associates' => $associate
@@ -47,8 +80,24 @@ class AssociateController extends Controller
         ]);
     }
 
+    public function profileImageUpload (Request $request, $user_id) {
+        $associate = Associate::with('associateData')->where('user_id', $user_id)->first();
+        $image = $request->file('image');
+        $input['imageName'] = $request->user_id. 'ProfileImage' . $image->getClientOriginalExtension();
+        $destinationPath = public_path('/profile_images');
+        $image->move($destinationPath, $input['imageName']);
+    }
+
     public function profileUpdate(Request $request, $user_id) {
         $associate = Associate::with('associateData')->where('user_id', $user_id)->first();
+
+        $image = $request->file('image');
+        if ($request->file('image') != '' && $request->file('image') != null){
+            $input['imageName'] = $request->user_id. 'ProfileImage.' . $image->getClientOriginalExtension();
+            $destinationPath = public_path('/profile_images');
+            $image->move($destinationPath, $input['imageName']);
+        }
+
 
         Associate::where('user_id', $user_id)
             ->update([
@@ -66,15 +115,28 @@ class AssociateController extends Controller
                 'style_and_skillset' => $request->styleAndSkillset ?? $associate->associateData->style_and_skillset,
                 'summary' => $request->summary ?? $associate->associateData->summary,
                 'credentials' => $request->credentials ?? $associate->associateData->credentials,
+                'image_url' => $input['imageName'] ?? $associate->associateData->image_url,
                 'updated_at' => Carbon::now(),
             ]);
 
         return redirect('/admin/associate/index');
     }
 
+    public function profilePDF($user_id) {
+        $associate = Associate::with('associateData')
+            ->where('user_id', $user_id)
+            ->first();
+
+        $associate->associateData->credentials = explode(', ', $associate->associateData->credentials);
+        $associate->associateData->relevant_projects = explode(', ', $associate->associateData->relevant_projects);
+
+        $pdf = PDF::loadView('associate.pdf', compact('associate'));
+        return $pdf->setPaper('a4' , 'landscape')->stream('associate.pdf');
+    }
 
     public function update(Request $request, $user_id) {
         $associate = Associate::with('associateData')->where('user_id', $user_id)->first();
+
 
         Associate::where('user_id', $user_id)
             ->update([

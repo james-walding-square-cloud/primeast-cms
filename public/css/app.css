@@ -17,5 +17,8 @@
     background-color: #041043;
 }
 #profile-image {
-    height: 300px;
+    height: 200px;
+}
+img {
+    border-radius: 100%;
 }
