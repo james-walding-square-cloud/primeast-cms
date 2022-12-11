@@ -47,6 +47,32 @@ class AssociateController extends Controller
         ]);
     }
 
+    public function profileUpdate(Request $request, $user_id) {
+        $associate = Associate::with('associateData')->where('user_id', $user_id)->first();
+
+        Associate::where('user_id', $user_id)
+            ->update([
+                'first_name' => $request->firstName ?? $associate->first_name,
+                'last_name' => $request->lastName ?? $associate->last_name,
+                'updated_at' => Carbon::now(),
+            ]);
+
+        AssociateData::where('user_id', $user_id)
+            ->update([
+                'working_languages' => $request->workingLanguages ?? $associate->associateData->working_languages,
+                'geographical_experience_summary' => $request->geographicalExperienceSummary ?? $associate->associateData->geographical_experience_summary,
+                'background' => $request->background ?? $associate->associateData->background,
+                'relevant_projects' => $request->relevantProjects ?? $associate->associateData->relevant_projects,
+                'style_and_skillset' => $request->styleAndSkillset ?? $associate->associateData->style_and_skillset,
+                'summary' => $request->summary ?? $associate->associateData->summary,
+                'credentials' => $request->credentials ?? $associate->associateData->credentials,
+                'updated_at' => Carbon::now(),
+            ]);
+
+        return redirect('/admin/associate/index');
+    }
+
+
     public function update(Request $request, $user_id) {
         $associate = Associate::with('associateData')->where('user_id', $user_id)->first();
 
@@ -74,6 +100,7 @@ class AssociateController extends Controller
                 'search_qualifications' => $request->educationalQualifications ?? $associate->associateData->educational_qualifications,
                 'search_primary_skillset' => $request->primarySkillset ?? $associate->associateData->primary_skillset,
                 'search_secondary_skillsets' => $request->secondarySkillset ?? $associate->associateData->secondary_skillsets,
+                'date_of_birth' => $request->dateOfBirth ?? $associate->date_of_birth,
                 'updated_at' => Carbon::now(),
             ]);
 
@@ -106,6 +133,8 @@ class AssociateController extends Controller
                 'learning_delivery_methods' => $request->learningDeliveryMethods ?? $associate->associateData->learning_delivery_methods,
                 'primary_coaching_accreditations' => $request->primaryCoachingMethods ?? $associate->associateData->primary_coaching_accreditations,
                 'secondary_coaching_accreditations' => $request->secondaryCoachingMethods ?? $associate->associateData->secondary_coaching_accreditations,
+                'summary' => $request->summary ?? $associate->associateData->summary,
+                'credentials' => $request->credentials ?? $associate->associateData->credentials,
                 'updated_at' => Carbon::now(),
             ]);
 

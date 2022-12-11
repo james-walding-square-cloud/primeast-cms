@@ -80,11 +80,12 @@
         </nav>
         <main>
             <div class="row">
-                @if(Auth::user())
-                    <div class="col-2 shadow-lg prm-blue-bg p-0" id="nav-row">
+
+                <div class="col-2 shadow-lg prm-blue-bg p-0" id="nav-row">
+                    @if(Auth::user())
                         @include('navigation.left-nav')
-                    </div>
-                @endif
+                    @endif
+                </div>
                 <div class="col-10 p-5" id="main-content">
                     <div class="shadow-lg">
                         @yield('content')

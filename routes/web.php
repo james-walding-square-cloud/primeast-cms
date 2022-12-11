@@ -20,6 +20,7 @@ Route::prefix('admin')->middleware(['auth', 'isAdmin'])->group(function () {
     Route::get('/associate/index', ('AssociateController@index'));
     Route::get('/associate/edit/{user_id}', ('AssociateController@edit'));
     Route::get('/associate/profile/{user_id}', ('AssociateController@profile'));
+    Route::put('/associate/profileUpdate/{user_id}', ('AssociateController@profileUpdate'));
     Route::put('/associate/update/{user_id}', ('AssociateController@update'));
     Route::get('/associate/create', ('AssociateController@create'));
 });

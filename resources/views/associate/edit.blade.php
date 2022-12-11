@@ -66,6 +66,24 @@
                             </div>
                         </div>
                     </div>
+                    <div class="row col-12 px-5">
+                        <div class="col-9 p-1 row">
+                            <div class="col-1">
+                                <label for="summary" class="form-label py-1">Summary</label>
+                            </div>
+                            <div class="col-11 ps-5">
+                                <textarea name='summary' rows="2" class="form-control" id="elevatorPitch" value="{{$associate->associateData->summary}}" placeholder="{{$associate->associateData->summary ?? 'Summary'}}"></textarea>
+                            </div>
+                        </div>
+                        <div class="col row">
+                            <div class="col-3">
+                                <label for="dateOfBirth" class="form-label py-1">Date Of Birth</label>
+                            </div>
+                            <div class="col-9">
+                                <input type="date" name='dateOfBirth' class="form-control" id="dateOfBirth" value="{{$associate->date_of_birth}}">
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
             <!-- Location -->
@@ -318,6 +336,14 @@
                             <div class="col-9">
                                 <input type="text" name='secondaryFacilitatingAccreditations' class="form-control" id="secondaryFacilitatingAccreditations" value="{{$associate->associateData->secondary_facilitating_accreditations}}" placeholder="{{$associate->associateData->secondary_facilitating_accreditations ?? 'Secondary Facilitating Accreditations'}}">
                             </div>
+                        </div>
+                    </div>
+                    <div class="col row px-5">
+                        <div class="col-1 p-0">
+                            <label for="credentials" class="form-label py-1">Credentials</label>
+                        </div>
+                        <div class="col-11 px-5">
+                            <input type="text" name='credentials' class="form-control mx-4" id="credentials" value="{{str_contains($associate->associateData->credentials, '[') ? str_replace(['[', ']', '"'], "", $associate->associateData->credentials) : $associate->associateData->credentials}}" placeholder="{{$associate->associateData->credentials ?? 'Credentials (Skill 1, Skill 2)'}}">
                         </div>
                     </div>
                 </div>

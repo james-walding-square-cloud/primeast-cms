@@ -6,7 +6,7 @@
         <h1 class="text-center">{{$associate->first_name . ' ' . $associate->last_name}}</h1>
         <hr>
     </div>
-    <form action="/admin/associate/update/{{$associate->user_id}}" method="post">
+    <form action="/admin/associate/profileUpdate/{{$associate->user_id}}" method="post">
         {{ method_field('PUT') }}
         {{ csrf_field() }}
         <fieldset>
@@ -15,7 +15,7 @@
                     <div id="profile-image" class="w-100">
 
                     </div>
-                    <div class="w-100 row m-0">
+                    <div class="w-100 row m-0 py-2">
                         <div class="col-6">
                             <input type="text" name='firstName' class="form-control" id="firstName" value="{{$associate->first_name}}" placeholder="{{$associate->first_name}}">
                         </div>
@@ -23,24 +23,43 @@
                             <input type="text" name='lastName' class="form-control" id="lastName" value="{{$associate->last_name}}" placeholder="{{$associate->last_name}}">
                         </div>
                     </div>
-                    <div class="w-100">
-                        <p class="fs-3">
-                            OSCAR IS A FACILITATOR, MENTOR, ACCREDITED COACH AND AN INTERNATIONAL SPEAKER WITH NATIONAL AND INTERNATIONAL EXPERIENCE IN EVALUATING AND INTERPRETING LEARNING NEEDS
-                        </p>
+                    <div class="w-100 row m-0 py-2">
+                        <div class="col-12">
+                            <textarea name='summary' rows="5" class="form-control" id="elevatorPitch" value="{{$associate->associateData->summary}}" placeholder="{{$associate->associateData->summary ?? 'Summary'}}"></textarea>
+                        </div>
                     </div>
-                    <div class="w-100">
-                        <span class="fs-3 bold">CREDENTIALS</span><br>
-                        <p class="fs-4">
-                            Certification for DISC/Behaviour
-                            Strength Deployment Inventory (SDI) Facilitator
-                            Emotional Intelligence Accreditation (EIP)
-                            Leadership Climate Accreditation (LCI)
-                            Level 5 Coaching and Mentoring in Management, ILM
-                            Master Practitioner Neuro Linguistic Programming (NLP)
-                        </p>
+                    <div class="w-100 row m-0 py-2">
+                        <div class="col-12">
+                            <input type="text" name='credentials' class="form-control m-0" id="credentials" value="{{str_contains($associate->associateData->credentials, '[') ? str_replace(['[', ']', '"'], "", $associate->associateData->credentials) : $associate->associateData->credentials}}" placeholder="{{$associate->associateData->credentials ?? 'Credentials (Skill 1, Skill 2)'}}">
+                        </div>
                     </div>
                 </div>
                 <div class="col-9">
+                    <div class="w-100 row m-0 py-2">
+                        <div class="col-12">
+                            <textarea name='background' rows="5" class="form-control" id="background" value="{{$associate->associateData->background}}" placeholder="{{$associate->associateData->background ?? 'Background'}}"></textarea>
+                        </div>
+                    </div>
+                    <div class="w-100 row m-0 py-2">
+                        <div class="col-12">
+                            <input type="text" name='relevantProjects' class="form-control m-0" id="relevantProjects" value="{{$associate->associateData->relevant_projects}}" placeholder="{{$associate->associateData->relevant_projects ?? 'Projects (Project 1, Project 2)'}}">
+                        </div>
+                    </div>
+                    <div class="w-100 row m-0 py-2">
+                        <div class="col-12">
+                            <textarea name='styleAndSkillset' rows="5" class="form-control" id="styleAndSkillset" value="{{$associate->associateData->style_and_skillset}}" placeholder="{{$associate->associateData->style_and_skillset ?? 'Style and Skillset'}}"></textarea>
+                        </div>
+                    </div>
+                    <div class="w-100 row m-0 py-2">
+                        <div class="col-12">
+                            <input type="text" name='languages' class="form-control m-0" id="languages" value="{{$associate->associateData->working_languages}}" placeholder="{{$associate->associateData->working_languages ?? 'Languages (Language 1, Language 2)'}}">
+                        </div>
+                    </div>
+                    <div class="w-100 row m-0 py-2">
+                        <div class="col-12">
+                            <textarea name='geographicalExperienceSummary' rows="5" class="form-control" id="geographicalExperienceSummary" value="{{$associate->associateData->geographical_experience_summary}}" placeholder="{{$associate->associateData->geographical_experience_summary ?? 'Geographical Summary'}}"></textarea>
+                        </div>
+                    </div>
 
                 </div>
             </div>
