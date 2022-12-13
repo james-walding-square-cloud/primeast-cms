@@ -122,7 +122,7 @@
                             <div class="col-9">
                                 <select class="form-select" name="country" id="country">
                                     @foreach($countries as $country)
-                                        <option {{$country->name == $selected_country->name ? 'selected' : ''}} value="{{$country->name}}">{{$country->name}}</option>
+                                        <option value="{{$country->name}}">{{$country->name}}</option>
                                     @endforeach
                                 </select>
                             </div>

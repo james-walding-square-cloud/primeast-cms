@@ -89,6 +89,7 @@ class AssociateController extends Controller
 
         foreach ($countries as $country) {
 
+            $country = (object)$country;
             $country->alt_names = explode(', ', $country->alt_name);
             if (isset($country->alt_name)) {
                 foreach ($country->alt_names as $alt_name) {
@@ -99,8 +100,6 @@ class AssociateController extends Controller
                 }
             }
         }
-
-//        dd($selected_country);
 
 
         return view('associate/edit', [
