@@ -13,6 +13,10 @@
 }
 
 /* Profile */
+.profile-edit-image {
+    max-height: 200px;
+    max-width: 200px;
+}
 .profile-blue {
     background-color: #041043;
 }

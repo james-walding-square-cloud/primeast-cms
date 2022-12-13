@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Associate;
 use App\Models\AssociateData;
+use App\Models\Country;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use \PDF;
@@ -16,7 +17,8 @@ class AssociateController extends Controller
             $location = $request->searchLocation ?? null;
             $skills = $request->searchSkills ?? null;
             $language = $request->searchLanguage ?? null;
-            $associate = Associate::when($language != null, function ($query) use ($language) {
+            $associate = Associate::with('associateData')
+                ->when($language != null, function ($query) use ($language) {
                     $query->where('known_languages', 'like', "%$language%");
                     return $query;
                 })
@@ -26,8 +28,19 @@ class AssociateController extends Controller
                     return $query;
                 })
                 ->when($skills != null, function ($query) use ($skills){
-                    $query->where('search_primary_skillset', 'like', "%$skills%")
-                        ->orWhere('search_secondary_skillsets', 'like', "%$skills%");
+                    $query->whereHas('associateData', function ($q) use ($skills) {
+                        $q->where('primary_skillset', 'like', "%$skills%")
+                        ->orWhere('educational_qualifications', 'like', "%$skills%")
+                        ->orWhere('secondary_skillsets', 'like', "%$skills%")
+                        ->orWhere('awards', 'like', "%$skills%")
+                        ->orWhere('primary_coaching_accreditations', 'like', "%$skills%")
+                        ->orWhere('secondary_coaching_accreditations', 'like', "%$skills%")
+                        ->orWhere('primary_facilitating_accreditations', 'like', "%$skills%")
+                        ->orWhere('secondary_facilitating_accreditations', 'like', "%$skills%")
+                        ->orWhere('credentials', 'like', "%$skills%");
+                        return $q;
+                    })
+                    ->orWhere('search_secondary_skillsets', 'like', "%$skills%");
                     return $query;
                 })
                 ->when($location != null, function ($query) use ($location) {
@@ -40,9 +53,12 @@ class AssociateController extends Controller
                         ->orWhere('postcode', 'like', "%$location%");
                     return $query;
                 })
+                ->where('active' , 1)
+                ->whereHas('associateData')
                 ->paginate(10);
         } else {
-            $associate = Associate::paginate(10);
+            $associate = Associate::where('active' , 1)
+                ->paginate(10);
         }
 
         return view('associate/index', [
@@ -54,8 +70,11 @@ class AssociateController extends Controller
         $user_id = Associate::orderBy('user_id', 'desc')->pluck('user_id')->first();
         $user_id = $user_id+1;
 
+        $countries = Country::all();
+
         return view('associate/create', [
             'user_id' => $user_id,
+            'countries' => $countries,
         ]);
 
     }
@@ -65,8 +84,29 @@ class AssociateController extends Controller
             ->where('user_id', $user_id)
             ->first();
 
+        $countries = Country::get();
+        $selected_country = $associate->country;
+
+        foreach ($countries as $country) {
+
+            $country->alt_names = explode(', ', $country->alt_name);
+            if (isset($country->alt_name)) {
+                foreach ($country->alt_names as $alt_name) {
+                    if ($alt_name == $associate->country) {
+                        $selected_country = $country;
+                        $associate->country == $country;
+                    }
+                }
+            }
+        }
+
+//        dd($selected_country);
+
+
         return view('associate/edit', [
             'associate' => $associate,
+            'countries' => $countries,
+            'selected_country' => $selected_country,
         ]);
     }
 
@@ -127,11 +167,18 @@ class AssociateController extends Controller
             ->where('user_id', $user_id)
             ->first();
 
-        $associate->associateData->credentials = explode(', ', $associate->associateData->credentials);
-        $associate->associateData->relevant_projects = explode(', ', $associate->associateData->relevant_projects);
+        if (isset($associate->associateData->credentials)) {
+            $associate->associateData->credentials = explode(', ', $associate->associateData->credentials);
+        }
+        if (isset($associate->associateData->relevant_projects)) {
+            $associate->associateData->relevant_projects = explode(', ', $associate->associateData->relevant_projects);
+            if (count($associate->associateData->relevant_projects) > 5) {
+                $associate->projects = array_chunk($associate->associateData->relevant_projects, 5);
+            }
+        }
 
         $pdf = PDF::loadView('associate.pdf', compact('associate'));
-        return $pdf->setPaper('a4' , 'landscape')->stream('associate.pdf');
+        return $pdf->setPaper('a4' , 'landscape')->download('associate.pdf');
     }
 
     public function update(Request $request, $user_id) {
@@ -205,20 +252,20 @@ class AssociateController extends Controller
 
     public function store(Request $request) {
 
-        $request->validate([
-            'title' => 'required',
-            'firstName' => 'required',
-            'lastName' => 'required',
-            'address1' => 'required',
-            'city' => 'required',
-            'postcode' => 'required',
-            'county' => 'required',
-            'country' => 'required',
-            'email' => 'required',
-            'emergencyContactName' => 'required',
-            'emergencyContactPhone' => 'required',
-            'emergencyContactEmail' => 'required',
-        ]);
+//        $request->validate([
+//            'title' => 'required',
+//            'firstName' => 'required',
+//            'lastName' => 'required',
+//            'address1' => 'required',
+//            'city' => 'required',
+//            'postcode' => 'required',
+//            'county' => 'required',
+//            'country' => 'required',
+//            'email' => 'required',
+//            'emergencyContactName' => 'required',
+//            'emergencyContactPhone' => 'required',
+//            'emergencyContactEmail' => 'required',
+//        ]);
 
         Associate::create([
             'user_id' => $request->user_id,
@@ -241,7 +288,7 @@ class AssociateController extends Controller
             'emergency_contact_name' => $request->emergencyContactName ?? null,
             'emergency_contact_phone' => $request->emergencyContactPhone ?? null,
             'emergency_contact_email' => $request->emergencyContactEmail ?? null,
-            'languages' => $request->known_languages ?? null,
+            'known_languages' => $request->known_languages ?? null,
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now(),
         ]);
@@ -250,7 +297,7 @@ class AssociateController extends Controller
             'user_id' => $request->user_id,
             'areas_of_interest' => null,
             'primary_skillset' => null,
-            'secondary_skillset' => null,
+            'secondary_skillsets' => null,
             'primary_language' => null,
             'working_languages' => null,
             'sectors_worked_in' => null,
@@ -259,7 +306,6 @@ class AssociateController extends Controller
             'mobility_details' => null,
             'educational_qualifications' => null,
             'awards' => null,
-            'areas_of_interest' => null,
             'fees_per_day' => null,
             'elevator_pitch' => null,
             'interesting_facts' => null,
@@ -285,5 +331,14 @@ class AssociateController extends Controller
 
 
         return redirect('/admin/associate/edit/'.$request->user_id);
+    }
+
+    public function deactivate($user_id) {
+        Associate::where('user_id', $user_id)
+            ->update([
+                'active' => 0,
+                'updated_at' => Carbon::now(),
+            ]);
+            return redirect()->back();
     }
 }

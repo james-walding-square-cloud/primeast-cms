@@ -33,8 +33,9 @@
     .profile-blue {
         background-color: #041043;
     }
-    .profile-border {
-        border: solid 1px #041043;
+    .profile-edit-image {
+        max-height: 200px;
+        max-width: 200px;
     }
     .text-white {
         color: #ffffff;
@@ -54,14 +55,19 @@
     }
 
 
+
 </style>
-<table class="w-100 brand-font profile-border h-100">
+<table class="w-100 brand-font h-100">
     <tbody>
     <tr>
         <!-- This is the left side -->
-        <td class="w-35 profile-blue text-white v-align-top p-10" style="height: 749px">
+        <td class="w-35 profile-blue text-white v-align-top p-10" style="height: 740px">
             <div class="w-100 text-center p-10">
-                <img  class="" src="{{'profile_images/'.$associate->associateData->image_url}}" alt="">
+                @if(isset($associate->associateData->image_url))
+                    <img  class="profile-edit-image" src="{{'profile_images/'.$associate->associateData->image_url}}" alt="">
+                @else
+                    <img  class="profile-edit-image" src="{{'profile_images/Icon-Transparent.png'}}" alt="">
+                @endif
             </div>
             <div class="py-3">
                 <div class="row"></div>
@@ -73,12 +79,9 @@
                 <p>{{$associate->associateData->summary}}</p>
             </div>
             <div class="w-100 row m-0 py-2">
-                <h2>Credentials</h2>
-                <ul>
-                    @foreach($associate->associateData->credentials as $credential)
-                        <li>{{$credential}}</li>
-                    @endforeach
-                </ul>
+                <h2>Language and Location</h2>
+                <p>{{$associate->associateData->working_languages}}</p>
+                <p>{{$associate->associateData->geographical_experience_summary}}</p>
             </div>
         </td>
         <!-- Right side -->
@@ -88,23 +91,46 @@
                 <p>{{$associate->associateData->background}}</p>
             </div>
 
-            <div class="w-100 row m-0 py-2">
-                <h2>Relevant Projects</h2>
-                <ul>
-                    @foreach($associate->associateData->relevant_projects as $project)
-                        <li>{{$project}}</li>
-                    @endforeach
-                </ul>
-            </div>
+            @isset($associate->associateData->relevant_projects)
+                <div class="w-100 row m-0 py-2">
+                    <h2>Relevant Projects</h2>
+                    @if(isset($associate->projects))
+                        <table style="vertical-align: top">
+                            <tr style="vertical-align: top">
+                                @foreach($associate->projects as $project_chunk)
+                                    <td style="vertical-align: top">
+                                        <ul>
+                                            @foreach($project_chunk as $project)
+                                                <li>{{$project}}</li>
+                                            @endforeach
+                                        </ul>
+                                    </td>
+                                @endforeach
+                            </tr>
+                        </table>
+                    @else
+                        <ul>
+                            @foreach($associate->associateData->relevant_projects as $project)
+                                <li>{{$project}}</li>
+                            @endforeach
+                        </ul>
+                    @endif
+                </div>
+            @endisset
             <div class="w-100 row m-0 py-2">
                 <h2>Style and Skillset</h2>
                 <p>{{$associate->associateData->style_and_skillset}}</p>
             </div>
-            <div class="w-100 row m-0 py-2">
-                <h2>Language and Location</h2>
-                <p>{{$associate->associateData->working_languages}}</p>
-                <p>{{$associate->associateData->geographical_experience_summary}}</p>
-            </div>
+            @isset($associate->associateData->credentials)
+                <div class="w-100 row m-0 py-2">
+                    <h2>Credentials</h2>
+                    <ul>
+                        @foreach($associate->associateData->credentials as $credential)
+                            <li>{{$credential}}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endisset
         </td>
     </tr>
     </tbody>

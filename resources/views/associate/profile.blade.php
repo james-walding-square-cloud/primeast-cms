@@ -13,7 +13,9 @@
             <div class="row m-0 text-white">
                 <div class="col-3 profile-blue text-center py-2">
                     @if(isset($associate->associateData->image_url))
-                        <img src="{{url('profile_images/'.$associate->associateData->image_url)}}" alt="">
+                        <img src="{{url('profile_images/'.$associate->associateData->image_url)}}" alt="" class="profile-edit-image">
+                    @else
+                        <img src="{{url('profile_images/icon-transparent.png')}}" alt="" class="profile-edit-image">
                     @endif
                         <div id="profile-image" class="w-100 pt-5">
                             <input name="image" id="image" type="file">
@@ -33,7 +35,7 @@
                     </div>
                     <div class="w-100 row m-0 py-2">
                         <div class="col-12">
-                            <input type="text" name='credentials' class="form-control m-0" id="credentials" value="{{str_contains($associate->associateData->credentials, '[') ? str_replace(['[', ']', '"'], "", $associate->associateData->credentials) : $associate->associateData->credentials}}" placeholder="{{$associate->associateData->credentials ?? 'Credentials (Skill 1, Skill 2)'}}">
+                            <input type="text" name='languages' class="form-control m-0" id="languages" value="{{$associate->associateData->working_languages}}" placeholder="{{$associate->associateData->working_languages ?? 'Languages (Language 1, Language 2)'}}">
                         </div>
                     </div>
                 </div>
@@ -55,15 +57,14 @@
                     </div>
                     <div class="w-100 row m-0 py-2">
                         <div class="col-12">
-                            <input type="text" name='languages' class="form-control m-0" id="languages" value="{{$associate->associateData->working_languages}}" placeholder="{{$associate->associateData->working_languages ?? 'Languages (Language 1, Language 2)'}}">
+                            <textarea name='geographicalExperienceSummary' rows="5" class="form-control" id="geographicalExperienceSummary" value="{{$associate->associateData->geographical_experience_summary}}" placeholder="{{$associate->associateData->geographical_experience_summary ?? 'Geographical Summary'}}"></textarea>
                         </div>
                     </div>
                     <div class="w-100 row m-0 py-2">
                         <div class="col-12">
-                            <textarea name='geographicalExperienceSummary' rows="5" class="form-control" id="geographicalExperienceSummary" value="{{$associate->associateData->geographical_experience_summary}}" placeholder="{{$associate->associateData->geographical_experience_summary ?? 'Geographical Summary'}}"></textarea>
+                            <input type="text" name='credentials' class="form-control m-0" id="credentials" value="{{str_contains($associate->associateData->credentials, '[') ? str_replace(['[', ']', '"'], "", $associate->associateData->credentials) : $associate->associateData->credentials}}" placeholder="{{$associate->associateData->credentials ?? 'Credentials (Skill 1, Skill 2)'}}">
                         </div>
                     </div>
-
                 </div>
             </div>
             <div class="col-2 float-end px-5 py-1">

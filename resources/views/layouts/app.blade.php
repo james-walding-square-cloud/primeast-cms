@@ -89,7 +89,7 @@
                     @endif
                 </div>
                 <div class="col-10 p-5" id="main-content">
-                    <div class="shadow-lg">
+                    <div class="shadow-lg h-100">
                         @yield('content')
                     </div>
 

@@ -23,7 +23,9 @@ Route::prefix('admin')->middleware(['auth', 'isAdmin'])->group(function () {
     Route::put('/associate/profileUpdate/{user_id}', ('AssociateController@profileUpdate'));
     Route::get('/associate/profilePDF/{user_id}', ('AssociateController@profilePDF'));
     Route::put('/associate/update/{user_id}', ('AssociateController@update'));
+    Route::get('/associate/deactivate/{user_id}', ('AssociateController@deactivate'));
     Route::get('/associate/create', ('AssociateController@create'));
+    Route::post('/associate/store', ('AssociateController@store'));
 });
 Auth::routes();
 

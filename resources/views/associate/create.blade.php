@@ -120,7 +120,11 @@
                                 <label for="country" class="form-label py-1">Country</label>
                             </div>
                             <div class="col-9">
-                                <input required type="text" name='country' class="form-control" id="country" placeholder="Country">
+                                <select class="form-select" name="country" id="country">
+                                    @foreach($countries as $country)
+                                        <option {{$country->name == $selected_country->name ? 'selected' : ''}} value="{{$country->name}}">{{$country->name}}</option>
+                                    @endforeach
+                                </select>
                             </div>
                         </div>
                     </div>

@@ -95,13 +95,32 @@
                                     </a>
                                 </div>
                                 <div class="col">
-                                    <button class="btn btn-danger w-100">
-                                        deactivate
-                                    </button>
+                                        <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
+                                            deactivate
+                                        </button>
                                 </div>
                             </div>
                         </td>
                     </tr>
+                    <!-- Modal -->
+                    <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="staticBackdropLabel">Deactivate User</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    Are you sure you want to Deactivate {{$associate->first_name . ' ' . $associate->last_name}}
+                                </div>
+                                <div class="modal-footer">
+                                    <a href="/admin/associate/deactivate/{{$associate->user_id}}">
+                                        <button type="submit" class="btn btn-primary">Yes</button>
+                                    </a>
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
+                                </div>
+                            </div>
+                        </div>
                 @endforeach
                 </tbody>
             </table>
@@ -110,7 +129,16 @@
                     {{ $associates->links() }}
                 </div>
             </div>
+            <div class="col-12">
+                <div class="col-2 float-end px-5 py-2">
+                    <a href="/admin/associate/create">
+                        <button type="submit" class="btn btn-success w-100">Create</button>
+                    </a>
+                </div>
+            </div>
         </div>
     </div>
+
+
 
 @endsection
