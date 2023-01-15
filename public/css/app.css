@@ -15,7 +15,7 @@
 /* Profile */
 .profile-edit-image {
     max-height: 200px;
-    max-width: 200px;
+    max-width: 100%;
 }
 .profile-blue {
     background-color: #041043;

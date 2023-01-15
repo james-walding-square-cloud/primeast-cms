@@ -9,30 +9,36 @@
                         <label for="searchName" class="form-label">
                             Name
                         </label>
-                        <input type="text" name="searchName" id="searchName" class="form-control">
+                        <input type="text" name="searchName" id="searchName" class="form-control" value="{{$name ?? ''}}">
                     </div>
                     <div class="col">
                         <label for="searchLanguage" class="form-label">
                             Language
                         </label>
-                        <input type="text" name="searchLanguage" id="searchLanguage" class="form-control">
+                        <input type="text" name="searchLanguage" id="searchLanguage" class="form-control" value="{{$language ?? ''}}">
                     </div>
                     <div class="col">
                         <label for="searchSkills" class="form-label">
                             Skills and Qualifications
                         </label>
-                        <input type="text" name="searchSkills" id="searchSkills" class="form-control">
+                        <input type="text" name="searchSkills" id="searchSkills" class="form-control" value="{{$skills ?? ''}}">
                     </div>
                     <div class="col">
                         <label for="searchLocation" class="form-label">
                             Location
                         </label>
-                        <input type="text" name="searchLocation" id="searchLocation" class="form-control">
+                        <input type="text" name="searchLocation" id="searchLocation" class="form-control" value="{{$location ?? ''}}">
+                    </div>
+                    <div class="col">
+                        <label for="searchSector" class="form-label">
+                            Sector
+                        </label>
+                        <input type="text" name="searchSector" id="searchSector" class="form-control" value="{{$sector ?? ''}}">
                     </div>
                     <div class="col">
                         <a href="/admin/associate/index">
                             <label>
-
+                                <span>.</span>
                             </label>
                             <button class="btn btn-success w-100">
                                 Search

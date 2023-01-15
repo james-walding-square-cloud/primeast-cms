@@ -72,7 +72,7 @@
                                 <label for="summary" class="form-label py-1">Summary</label>
                             </div>
                             <div class="col-11 ps-5">
-                                <textarea name='summary' rows="2" class="form-control" id="elevatorPitch" value="{{$associate->associateData->summary}}" placeholder="{{$associate->associateData->summary ?? 'Summary'}}"></textarea>
+                                <textarea name='summary' rows="2" class="form-control" id="elevatorPitch" value="{{$associate->associateData->summary}}" placeholder="{{$associate->associateData->summary ?? 'Summary'}}">{{$associate->associateData->summary ?? 'Summary'}}</textarea>
                             </div>
                         </div>
                         <div class="col row">

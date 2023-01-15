@@ -17,7 +17,9 @@ class AssociateController extends Controller
             $location = $request->searchLocation ?? null;
             $skills = $request->searchSkills ?? null;
             $language = $request->searchLanguage ?? null;
+            $sector = $request->searchSector ?? null;
             $associate = Associate::with('associateData')
+                ->whereHas('associateData')
                 ->when($language != null, function ($query) use ($language) {
                     $query->where('known_languages', 'like', "%$language%");
                     return $query;
@@ -53,16 +55,45 @@ class AssociateController extends Controller
                         ->orWhere('postcode', 'like', "%$location%");
                     return $query;
                 })
+                ->when($sector != null, function ($query) use ($sector) {
+                    $query->whereHas('associateData', function ($q) use ($sector) {
+                        $q->where('Sectors_worked_in', 'like', "%$sector%");
+                        return $q;
+                    });
+                    return $query;
+                })
                 ->where('active' , 1)
-                ->whereHas('associateData')
+                ->orderBy('first_name')
                 ->paginate(10);
         } else {
-            $associate = Associate::where('active' , 1)
+            if (isset($name)) {
+                dump($name);
+            }
+            if (isset($location)) {
+                dump($location);
+            }
+            if (isset($skills)) {
+                dump($skills);
+            }
+            if (isset($language)) {
+                dump($language);
+            }
+            $associate = Associate::with('associateData')
+                ->whereHas('associateData')
+                ->where('active' , 1)
                 ->paginate(10);
         }
 
+        if (!empty($request->all())) {
+            dump($request->all());
+        }
+
         return view('associate/index', [
-            'associates' => $associate
+            'associates' => $associate,
+            'name' => $request->searchName ?? null,
+            'location' => $request->searchLocation ?? null,
+            'skills' => $request->searchSkills ?? null,
+            'language' => $request->searchLanguage ?? null,
         ]);
     }
 
@@ -95,12 +126,11 @@ class AssociateController extends Controller
                 foreach ($country->alt_names as $alt_name) {
                     if ($alt_name == $associate->country) {
                         $selected_country = $country;
-                        $associate->country == $country;
+//                        $associate->country = $country;
                     }
                 }
             }
         }
-
 
         return view('associate/edit', [
             'associate' => $associate,
@@ -176,7 +206,7 @@ class AssociateController extends Controller
             }
         }
 
-        $pdf = PDF::loadView('associate.pdf', compact('associate'));
+        $pdf = PDF::setOptions(['isHtml5ParserEnabled' => true, 'isRemoteEnabled' => true])->loadView('associate.pdf', compact('associate'));
         return $pdf->setPaper('a4' , 'landscape')->download('associate.pdf');
     }
 
