@@ -49,7 +49,7 @@
             </fieldset>
         </form>
 
-        <div class="results py-2 ">
+        <div class="results py-2">
             <div class="w-100 d-flex justify-content-center align-items-middle">
                 <div>
                     {{ $associates->links() }}
@@ -78,30 +78,30 @@
                         <td>{{$associate->associateData ? $associate->associateData->primary_language : ''}}</td>
                         <td>{{$associate->company}}</td>
                         <td>
-                            <div class="row">
-                                <div class="col-3">
+                            <div class="row m-0">
+                                <div class="col-6 col-xl">
                                     <a href="/admin/associate/edit/{{$associate->user_id}}">
                                         <button class="btn btn-warning w-100">
                                             edit
                                         </button>
                                     </a>
                                 </div>
-                                <div class="col">
+                                <div class="col-6 col-xl">
                                     <a href="/admin/associate/profile/{{$associate->user_id}}">
                                         <button class="btn btn-primary w-100">
                                             profile
                                         </button>
                                     </a>
                                 </div>
-                                <div class="col">
+                                <div class="col-6 col-xl">
                                     <a href="/admin/associate/profilePDF/{{$associate->user_id}}">
                                         <button class="btn btn-success w-100">
                                             view
                                         </button>
                                     </a>
                                 </div>
-                                <div class="col">
-                                        <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
+                                <div class="col-6 col-xl">
+                                        <button type="button" class="btn btn-danger w-100" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
                                             deactivate
                                         </button>
                                 </div>
