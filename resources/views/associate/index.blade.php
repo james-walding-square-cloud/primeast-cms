@@ -15,7 +15,12 @@
                         <label for="searchLanguage" class="form-label">
                             Language
                         </label>
-                        <input type="text" name="searchLanguage" id="searchLanguage" class="form-control" value="{{$language ?? ''}}">
+                        <select class="form-control " id="searchLanguage" name="searchLanguage[]" multiple="multiple">
+                            @foreach($languages as $language)
+                                <option value="{{$language}}">{{$language}}</option>
+                            @endforeach
+                        </select>
+{{--                        <input type="text" name="searchLanguage" id="searchLanguage" class="form-control" value="{{$language ?? ''}}">--}}
                     </div>
                     <div class="col">
                         <label for="searchSkills" class="form-label">
@@ -145,6 +150,29 @@
         </div>
     </div>
 
+    <script>
+        $(document).ready(function() {
+            $('#searchLanguage').select2();
+        });
+
+        $(document).on('click', '.pagination li a', function (e) {
+            e.preventDefault();
+            if ($(this).attr('href')) {
+                var queryString = '';
+                var allQueries = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
+                if(allQueries[0].split('=').length >1){
+                    for (var i = 0; i < allQueries.length; i++) {
+                        var hash = allQueries[i].split('=');
+                        if (hash[0] !== 'page') {
+                            queryString += '&' + hash[0] + '=' + hash[1];
+                        }
+                    }
+                }
+                window.location.replace($(this).attr('href') + queryString);
+            }
+        });
+
+    </script>
 
 
 @endsection

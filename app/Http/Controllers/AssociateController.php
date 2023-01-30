@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Associate;
 use App\Models\AssociateData;
 use App\Models\Country;
+use App\Models\Language;
+use App\Models\Sector;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use \PDF;
@@ -12,7 +14,10 @@ use \PDF;
 class AssociateController extends Controller
 {
     public function index(Request $request) {
+        $languages = Language::get()->pluck('language');
+
         if (!empty($request->all())) {
+            dump($request->searchLanguage);
             $name = $request->searchName ?? null;
             $location = $request->searchLocation ?? null;
             $skills = $request->searchSkills ?? null;
@@ -21,8 +26,16 @@ class AssociateController extends Controller
             $associate = Associate::with('associateData')
                 ->whereHas('associateData')
                 ->when($language != null, function ($query) use ($language) {
-                    $query->where('known_languages', 'like', "%$language%");
-                    return $query;
+                    foreach ($language as $languageItem) {
+                        $query->whereHas('associateData', function ($q) use ($languageItem) {
+                            $q->where('primary_skillset', 'like', "%$languageItem%")
+                                ->orWhere('primary_language', 'like', "%$languageItem%")
+                                ->orWhere('working_languages', 'like', "%$languageItem%");
+                            return $q;
+                        })
+                            ->orWhere('known_languages', 'like', "%$languageItem%");
+                        return $query;
+                    }
                 })
                 ->when($name != null ,function ($query) use ($name) {
                     $query->where('first_name', 'like', "%$name%")
@@ -64,37 +77,120 @@ class AssociateController extends Controller
                 })
                 ->where('active' , 1)
                 ->orderBy('first_name')
-                ->paginate(10);
+                ->paginate(50);
         } else {
-            if (isset($name)) {
-                dump($name);
-            }
-            if (isset($location)) {
-                dump($location);
-            }
-            if (isset($skills)) {
-                dump($skills);
-            }
-            if (isset($language)) {
-                dump($language);
-            }
             $associate = Associate::with('associateData')
                 ->whereHas('associateData')
                 ->where('active' , 1)
-                ->paginate(10);
+                ->paginate(50);
         }
 
-        if (!empty($request->all())) {
-            dump($request->all());
-        }
+//        $this->sectorsUpdate();
+
 
         return view('associate/index', [
             'associates' => $associate,
+            'languages' => $languages,
             'name' => $request->searchName ?? null,
             'location' => $request->searchLocation ?? null,
             'skills' => $request->searchSkills ?? null,
             'language' => $request->searchLanguage ?? null,
         ]);
+    }
+
+    public function languagesUpdate() {
+        $languageList = [];
+
+        $associate = Associate::whereHas('associateData')->where('active', 1)->get();
+        $languages = Language::get()->pluck('language')->toArray();
+
+        foreach ($associate as $person) {
+            $knownLanguages = explode(' , ', $person->known_languages);
+            $primaryLanguage = $person->associateData->primary_language;
+            $workingLanguages = explode(' , ', $person->associateData->working_languages);
+
+            if (is_array($knownLanguages)) {
+                foreach ($knownLanguages as $language) {
+                    $languageArray[] = $language;
+                }
+            } elseif ($knownLanguages != null) {
+                $languageArray[] = $language;
+            }
+
+            if (isset($primaryLanguage)) {
+                $languageArray[] = $primaryLanguage;
+            }
+
+            if (is_array($workingLanguages)) {
+                foreach ($workingLanguages as $language) {
+                    $languageArray[] = $language;
+                }
+            } elseif ($workingLanguages != null) {
+                $languageArray[] = $language;
+            }
+
+            if (is_array($languageArray) && !empty($languageArray)) {
+                $languageArray = array_unique($languageArray);
+                foreach ($languageArray as $language) {
+                    if (!in_array($language, $languageList)) {
+                        $languageList[] = $language;
+                    }
+                }
+            }
+        }
+
+
+        $languageList = array_filter($languageList);
+        foreach ($languageList as $languageItem) {
+            if (!in_array($languageItem, $languages)) {
+                Language::create([
+                    'language' => $languageItem,
+                ]);
+            }
+        }
+    }
+
+    public function sectorsUpdate() {
+        $sectorList = [];
+        $sectorArray = [];
+        $associate = Associate::whereHas('associateData')->where('active', 1)->get();
+        $sectors = Sector::get()->pluck('sector')->toArray();
+
+        foreach ($associate as $person) {
+            $sectorsWorkedIn = explode(',', $person->associateData->sectors_worked_in);
+            foreach ($sectorsWorkedIn as $key => $sector) {
+                $sector = str_replace(['[', ']','"'], "", $sector);
+                $sectorsWorkedIn[$key] = $sector;
+            }
+
+            if (is_array($sectorsWorkedIn)) {
+                foreach ($sectorsWorkedIn as $sector) {
+                    $sectorList[] = $sector;
+                }
+            } elseif ($sectorsWorkedIn != null) {
+                $sectorList[] = $sector;
+            }
+
+            if (is_array($sectorList) && !empty($sectorList)) {
+                $sectorList = array_unique($sectorList);
+                foreach ($sectorList as $sector) {
+                    if (!in_array($sector, $sectors)) {
+                        $sectorArray[] = $sector;
+                    }
+                }
+            }
+        }
+
+        $sectorArray = array_filter($sectorArray);
+        dd($sectorArray);
+
+        foreach ($sectorArray as $sectorItem) {
+            if (!in_array($languageItem, $languages)) {
+                Language::create([
+                    'language' => $languageItem,
+                ]);
+            }
+        }
     }
 
     public function create() {
