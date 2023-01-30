@@ -77,12 +77,12 @@ class AssociateController extends Controller
                 })
                 ->where('active' , 1)
                 ->orderBy('first_name')
-                ->paginate(50);
+                ->paginate(10);
         } else {
             $associate = Associate::with('associateData')
                 ->whereHas('associateData')
                 ->where('active' , 1)
-                ->paginate(50);
+                ->paginate(10);
         }
 
 //        $this->sectorsUpdate();
