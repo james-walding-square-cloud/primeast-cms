@@ -17,7 +17,7 @@ class AssociateController extends Controller
         $languages = Language::get()->pluck('language');
 
         if (!empty($request->all())) {
-            dump($request->searchLanguage);
+//            dump($request->searchLanguage);
             $name = $request->searchName ?? null;
             $location = $request->searchLocation ?? null;
             $skills = $request->searchSkills ?? null;
