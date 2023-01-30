@@ -15,7 +15,7 @@
 /* Profile */
 .profile-edit-image {
     max-height: 200px;
-    max-width: 200px;
+    max-width: 100%;
 }
 .profile-blue {
     background-color: #041043;
@@ -25,4 +25,28 @@
 }
 img {
     border-radius: 100%;
+}
+
+/* Button Defaults */
+.btn-warning, .btn-warning:hover {
+    background-color: #041043;
+    color: white;
+    border: none;
+}
+.btn-primary, .btn-primary:hover {
+    background-color: #22869C;
+    border: none;
+
+}
+
+.btn-success, .btn-success:hover {
+    background-color: #3C505E;
+    border: none;
+
+}
+
+.btn-danger, .btn-danger:hover {
+    background-color: #BC1A87;
+    border: none;
+
 }

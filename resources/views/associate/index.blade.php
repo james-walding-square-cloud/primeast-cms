@@ -9,30 +9,41 @@
                         <label for="searchName" class="form-label">
                             Name
                         </label>
-                        <input type="text" name="searchName" id="searchName" class="form-control">
+                        <input type="text" name="searchName" id="searchName" class="form-control" value="{{$name ?? ''}}">
                     </div>
                     <div class="col">
                         <label for="searchLanguage" class="form-label">
                             Language
                         </label>
-                        <input type="text" name="searchLanguage" id="searchLanguage" class="form-control">
+                        <select class="form-control " id="searchLanguage" name="searchLanguage[]" multiple="multiple">
+                            @foreach($languages as $language)
+                                <option value="{{$language}}">{{$language}}</option>
+                            @endforeach
+                        </select>
+{{--                        <input type="text" name="searchLanguage" id="searchLanguage" class="form-control" value="{{$language ?? ''}}">--}}
                     </div>
                     <div class="col">
                         <label for="searchSkills" class="form-label">
                             Skills and Qualifications
                         </label>
-                        <input type="text" name="searchSkills" id="searchSkills" class="form-control">
+                        <input type="text" name="searchSkills" id="searchSkills" class="form-control" value="{{$skills ?? ''}}">
                     </div>
                     <div class="col">
                         <label for="searchLocation" class="form-label">
                             Location
                         </label>
-                        <input type="text" name="searchLocation" id="searchLocation" class="form-control">
+                        <input type="text" name="searchLocation" id="searchLocation" class="form-control" value="{{$location ?? ''}}">
+                    </div>
+                    <div class="col">
+                        <label for="searchSector" class="form-label">
+                            Sector
+                        </label>
+                        <input type="text" name="searchSector" id="searchSector" class="form-control" value="{{$sector ?? ''}}">
                     </div>
                     <div class="col">
                         <a href="/admin/associate/index">
                             <label>
-
+                                <span>.</span>
                             </label>
                             <button class="btn btn-success w-100">
                                 Search
@@ -43,7 +54,7 @@
             </fieldset>
         </form>
 
-        <div class="results py-2 ">
+        <div class="results py-2">
             <div class="w-100 d-flex justify-content-center align-items-middle">
                 <div>
                     {{ $associates->links() }}
@@ -72,30 +83,30 @@
                         <td>{{$associate->associateData ? $associate->associateData->primary_language : ''}}</td>
                         <td>{{$associate->company}}</td>
                         <td>
-                            <div class="row">
-                                <div class="col-3">
+                            <div class="row m-0">
+                                <div class="col-6 col-xl">
                                     <a href="/admin/associate/edit/{{$associate->user_id}}">
                                         <button class="btn btn-warning w-100">
                                             edit
                                         </button>
                                     </a>
                                 </div>
-                                <div class="col">
+                                <div class="col-6 col-xl">
                                     <a href="/admin/associate/profile/{{$associate->user_id}}">
                                         <button class="btn btn-primary w-100">
                                             profile
                                         </button>
                                     </a>
                                 </div>
-                                <div class="col">
+                                <div class="col-6 col-xl">
                                     <a href="/admin/associate/profilePDF/{{$associate->user_id}}">
                                         <button class="btn btn-success w-100">
                                             view
                                         </button>
                                     </a>
                                 </div>
-                                <div class="col">
-                                        <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
+                                <div class="col-6 col-xl">
+                                        <button type="button" class="btn btn-danger w-100" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
                                             deactivate
                                         </button>
                                 </div>
@@ -139,6 +150,29 @@
         </div>
     </div>
 
+    <script>
+        $(document).ready(function() {
+            $('#searchLanguage').select2();
+        });
+
+        $(document).on('click', '.pagination li a', function (e) {
+            e.preventDefault();
+            if ($(this).attr('href')) {
+                var queryString = '';
+                var allQueries = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
+                if(allQueries[0].split('=').length >1){
+                    for (var i = 0; i < allQueries.length; i++) {
+                        var hash = allQueries[i].split('=');
+                        if (hash[0] !== 'page') {
+                            queryString += '&' + hash[0] + '=' + hash[1];
+                        }
+                    }
+                }
+                window.location.replace($(this).attr('href') + queryString);
+            }
+        });
+
+    </script>
 
 
 @endsection

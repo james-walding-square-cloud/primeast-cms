@@ -26,6 +26,7 @@ Route::prefix('admin')->middleware(['auth', 'isAdmin'])->group(function () {
     Route::get('/associate/deactivate/{user_id}', ('AssociateController@deactivate'));
     Route::get('/associate/create', ('AssociateController@create'));
     Route::post('/associate/store', ('AssociateController@store'));
+    Route::get('/update/languages', ('AssociateController@languagesUpdate'));
 });
 Auth::routes();
 
