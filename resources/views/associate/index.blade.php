@@ -20,13 +20,16 @@
                                 <option value="{{$language}}">{{$language}}</option>
                             @endforeach
                         </select>
-{{--                        <input type="text" name="searchLanguage" id="searchLanguage" class="form-control" value="{{$language ?? ''}}">--}}
                     </div>
                     <div class="col">
                         <label for="searchSkills" class="form-label">
                             Skills and Qualifications
                         </label>
-                        <input type="text" name="searchSkills" id="searchSkills" class="form-control" value="{{$skills ?? ''}}">
+                        <select class="form-control" id="searchSkill" name="searchSkill[]" multiple="multiple">
+                            @foreach($skills as $skill)
+                                <option value="{{$skill}}">{{$skill}}</option>
+                            @endforeach
+                        </select>
                     </div>
                     <div class="col">
                         <label for="searchLocation" class="form-label">
@@ -38,7 +41,11 @@
                         <label for="searchSector" class="form-label">
                             Sector
                         </label>
-                        <input type="text" name="searchSector" id="searchSector" class="form-control" value="{{$sector ?? ''}}">
+                        <select class="form-control" id="searchSector" name="searchSector[]" multiple="multiple">
+                            @foreach($sectors as $sector)
+                                <option value="{{$sector}}">{{$sector}}</option>
+                            @endforeach
+                        </select>
                     </div>
                     <div class="col">
                         <a href="/admin/associate/index">
@@ -153,6 +160,8 @@
     <script>
         $(document).ready(function() {
             $('#searchLanguage').select2();
+            $('#searchSector').select2();
+            $('#searchSkill').select2();
         });
 
         $(document).on('click', '.pagination li a', function (e) {
