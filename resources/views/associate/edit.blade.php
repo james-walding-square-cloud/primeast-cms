@@ -192,7 +192,7 @@
                                 <label for="email" class="form-label py-1">Email</label>
                             </div>
                             <div class="col-9">
-                                <input type="text" class="form-control" id="email" placeholder="{{$associate->email}}">
+                                <input type="text" class="form-control" id="email" value="{{$associate->email}}" placeholder="{{$associate->email}}">
                             </div>
                         </div>
                         <div class="col p-1 row">
@@ -200,7 +200,7 @@
                                 <label for="secondaryEmail" class="form-label py-1">Secondary Email</label>
                             </div>
                             <div class="col-9">
-                                <input type="text" class="form-control" id="secondaryEmail" placeholder="{{$associate->secondary_email}}">
+                                <input type="text" class="form-control" id="secondaryEmail" value="{{$associate->secondary_email}}" placeholder="{{$associate->secondary_email}}">
                             </div>
                         </div>
                         <div class="col p-1 row">
@@ -208,7 +208,7 @@
                                 <label for="linkedin" class="form-label py-1">Linkedin</label>
                             </div>
                             <div class="col-9">
-                                <input type="text" class="form-control" id="linkedin" placeholder="{{$associate->linkedin}}">
+                                <input type="text" class="form-control" id="linkedin" value="{{$associate->linkedin}}" placeholder="{{$associate->linkedin}}">
                             </div>
                         </div>
                     </div>
@@ -522,7 +522,7 @@
                                 <label for="elevatorPitch" class="form-label py-1">Elevator Pitch</label>
                             </div>
                             <div class="col-11">
-                                <textarea name='elevatorPitch' rows="3" class="form-control" id="elevatorPitch" value="{{$associate->associateData->elevator_pitch}}" placeholder="{{$associate->associateData->elevator_pitch ?? 'Elevator Pitch'}}"></textarea>
+                                <textarea name='elevatorPitch' rows="3" class="form-control" id="elevatorPitch" value="{{$associate->associateData->elevator_pitch}}" placeholder="{{$associate->associateData->elevator_pitch ?? 'Elevator Pitch'}}">{{$associate->associateData->elevator_pitch}}</textarea>
                             </div>
                         </div>
                     </div>
@@ -532,7 +532,7 @@
                                 <label for="interestingFacts" class="form-label py-1">Interesting Facts</label>
                             </div>
                             <div class="col-11">
-                                <textarea name='interestingFacts' rows="3" class="form-control textbox" id="interestingFacts" value="{{$associate->associateData->interesting_facts}}" placeholder="{{$associate->associateData->interesting_facts ?? 'Interesting Facts'}}"></textarea>
+                                <textarea name='interestingFacts' rows="3" class="form-control textbox" id="interestingFacts" value="{{$associate->associateData->interesting_facts}}" placeholder="{{$associate->associateData->interesting_facts ?? 'Interesting Facts'}}">{{$associate->associateData->interesting_facts}}</textarea>
                             </div>
                         </div>
                     </div>
