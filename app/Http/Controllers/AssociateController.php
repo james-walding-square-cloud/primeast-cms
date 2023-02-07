@@ -7,6 +7,7 @@ use App\Models\AssociateData;
 use App\Models\Country;
 use App\Models\Language;
 use App\Models\Sector;
+use App\Models\Skill;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use \PDF;
@@ -15,12 +16,13 @@ class AssociateController extends Controller
 {
     public function index(Request $request) {
         $languages = Language::get()->pluck('language');
+        $sectors = Sector::get()->pluck('sector');
+        $skills = Skill::get()->pluck('title');
 
         if (!empty($request->all())) {
-//            dump($request->searchLanguage);
             $name = $request->searchName ?? null;
             $location = $request->searchLocation ?? null;
-            $skills = $request->searchSkills ?? null;
+            $skill = $request->searchSkill ?? null;
             $language = $request->searchLanguage ?? null;
             $sector = $request->searchSector ?? null;
             $associate = Associate::with('associateData')
@@ -42,21 +44,23 @@ class AssociateController extends Controller
                         ->orWhere('last_name', 'like', "%$name%");
                     return $query;
                 })
-                ->when($skills != null, function ($query) use ($skills){
-                    $query->whereHas('associateData', function ($q) use ($skills) {
-                        $q->where('primary_skillset', 'like', "%$skills%")
-                        ->orWhere('educational_qualifications', 'like', "%$skills%")
-                        ->orWhere('secondary_skillsets', 'like', "%$skills%")
-                        ->orWhere('awards', 'like', "%$skills%")
-                        ->orWhere('primary_coaching_accreditations', 'like', "%$skills%")
-                        ->orWhere('secondary_coaching_accreditations', 'like', "%$skills%")
-                        ->orWhere('primary_facilitating_accreditations', 'like', "%$skills%")
-                        ->orWhere('secondary_facilitating_accreditations', 'like', "%$skills%")
-                        ->orWhere('credentials', 'like', "%$skills%");
-                        return $q;
-                    })
-                    ->orWhere('search_secondary_skillsets', 'like', "%$skills%");
-                    return $query;
+                ->when($skill != null, function ($query) use ($skill){
+                    foreach ($skill as $skillItem) {
+                        $query->whereHas('associateData', function ($q) use ($skillItem) {
+                            $q->where('primary_skillset', 'like', "%$skillItem%")
+                                ->orWhere('educational_qualifications', 'like', "%$skillItem%")
+                                ->orWhere('secondary_skillsets', 'like', "%$skillItem%")
+                                ->orWhere('awards', 'like', "%$skillItem%")
+                                ->orWhere('primary_coaching_accreditations', 'like', "%$skillItem%")
+                                ->orWhere('secondary_coaching_accreditations', 'like', "%$skillItem%")
+                                ->orWhere('primary_facilitating_accreditations', 'like', "%$skillItem%")
+                                ->orWhere('secondary_facilitating_accreditations', 'like', "%$skillItem%")
+                                ->orWhere('credentials', 'like', "%$skillItem%");
+                            return $q;
+                        })
+                            ->orWhere('search_secondary_skillsets', 'like', "%$skillItem%");
+                        return $query;
+                    }
                 })
                 ->when($location != null, function ($query) use ($location) {
                     $query->where('address1', 'like', "%$location%")
@@ -69,11 +73,13 @@ class AssociateController extends Controller
                     return $query;
                 })
                 ->when($sector != null, function ($query) use ($sector) {
-                    $query->whereHas('associateData', function ($q) use ($sector) {
-                        $q->where('Sectors_worked_in', 'like', "%$sector%");
-                        return $q;
-                    });
-                    return $query;
+                    foreach ($sector as $sectorItem) {
+                        $query->whereHas('associateData', function ($q) use ($sectorItem) {
+                            $q->where('Sectors_worked_in', 'like', "%$sectorItem%");
+                            return $q;
+                        });
+                        return $query;
+                    }
                 })
                 ->where('active' , 1)
                 ->orderBy('first_name')
@@ -84,16 +90,14 @@ class AssociateController extends Controller
                 ->where('active' , 1)
                 ->paginate(10);
         }
-
-//        $this->sectorsUpdate();
-
-
         return view('associate/index', [
             'associates' => $associate,
             'languages' => $languages,
+            'sectors' => $sectors,
+            'skills' => $skills,
             'name' => $request->searchName ?? null,
             'location' => $request->searchLocation ?? null,
-            'skills' => $request->searchSkills ?? null,
+            'skill' => $request->searchSkill ?? null,
             'language' => $request->searchLanguage ?? null,
         ]);
     }
@@ -150,9 +154,71 @@ class AssociateController extends Controller
         }
     }
 
+    public function skillsUpdate() {
+        $skillsList = [];
+        $searchList = [];
+        $awardsArray = [];
+        $educationalQualificationsArray = [];
+        $credentialsArray = [];
+
+
+        $associate = Associate::whereHas('associateData')->where('active', 1)->get();
+        $skills = Skill::get()->pluck('language')->toArray();
+
+        foreach ($associate as $person) {
+            $primarySkillset = json_decode($person->associateData->primary_skillset);
+            $secondarySkillset = json_decode($person->associateData->secondary_skillsets);
+            $primaryCoachingAccreditations = json_decode($person->associateData->primary_coaching_accreditations);
+            $credentials = explode(',', $person->associateData->credentials);
+            $educationalQualifications = explode(';', $person->associateData->educational_qualifications);
+            $awards = explode(',', $person->associateData->awards);
+            if (isset($educationalQualifications) && $educationalQualifications[0] != "") {
+                foreach ($educationalQualifications as $qual) {
+                    $educationalQualificationsArray[] = ltrim($qual);
+                }
+            }
+            if (isset($awards) && $awards[0] != "") {
+                foreach ($awards as $award) {
+                    $awardsArray[] = ltrim($award);
+                }
+            }
+            if (isset($credentials) && $credentials[0] != "") {
+                foreach ($credentials as $credential) {
+                    $credentialsArray[] = ltrim($credential);
+                }
+            }
+
+            array_unique($educationalQualificationsArray);
+            array_unique($awardsArray);
+            array_unique($credentialsArray);
+
+            $skillsList = array_merge([$primarySkillset ?? null, $secondarySkillset ?? null, $primaryCoachingAccreditations ?? null, $credentialsArray, $educationalQualificationsArray, $awardsArray]);
+
+            foreach ($skillsList as $list) {
+                if ($list != [] && $list != null) {
+                    foreach ($list as $listItem) {
+                        if (!in_array($listItem, $searchList)) {
+                            $searchList[] = $listItem;
+                        }
+                    }
+                }
+            }
+        }
+
+        $arrayChunk = array_chunk($searchList, 50);
+//        dd($arrayChunk);
+
+        foreach ($arrayChunk[6] as $skillsItem) {
+            if (!in_array($skillsItem, $skills)) {
+                Skill::create([
+                    'title' => $skillsItem,
+                ]);
+            }
+        }
+    }
+
     public function sectorsUpdate() {
         $sectorList = [];
-        $sectorArray = [];
         $associate = Associate::whereHas('associateData')->where('active', 1)->get();
         $sectors = Sector::get()->pluck('sector')->toArray();
 
@@ -165,29 +231,27 @@ class AssociateController extends Controller
 
             if (is_array($sectorsWorkedIn)) {
                 foreach ($sectorsWorkedIn as $sector) {
-                    $sectorList[] = $sector;
-                }
-            } elseif ($sectorsWorkedIn != null) {
-                $sectorList[] = $sector;
-            }
-
-            if (is_array($sectorList) && !empty($sectorList)) {
-                $sectorList = array_unique($sectorList);
-                foreach ($sectorList as $sector) {
-                    if (!in_array($sector, $sectors)) {
-                        $sectorArray[] = $sector;
+                    if (!in_array($sector, $sectorList) && $sector != 'null') {
+                        $sectorList[] = $sector;
                     }
+                }
+            } elseif ($sectorsWorkedIn != null && $sector != 'null') {
+                if (!in_array($sector, $sectorList) && $sector != 'null') {
+                    $sectorList[] = $sector;
                 }
             }
         }
 
-        $sectorArray = array_filter($sectorArray);
-        dd($sectorArray);
+        $sectorArray = array_filter($sectorList);
+        foreach ($sectorArray as $sectorItem) {
+            $sectorItem = stripslashes($sectorItem);
+        }
+
 
         foreach ($sectorArray as $sectorItem) {
-            if (!in_array($languageItem, $languages)) {
-                Language::create([
-                    'language' => $languageItem,
+            if (!in_array($sectorItem, $sectors)) {
+                Sector::create([
+                    'sector' => $sectorItem,
                 ]);
             }
         }
