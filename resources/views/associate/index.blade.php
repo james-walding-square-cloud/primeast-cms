@@ -23,13 +23,19 @@
                     </div>
                     <div class="col">
                         <label for="searchSkills" class="form-label">
-                            Skills and Qualifications
+                            Skills
                         </label>
                         <select class="form-control" id="searchSkill" name="searchSkill[]" multiple="multiple">
                             @foreach($skills as $skill)
                                 <option value="{{$skill}}">{{$skill}}</option>
                             @endforeach
                         </select>
+                    </div>
+                    <div class="col">
+                        <label for="searchQualifications" class="form-label">
+                            Qualifications
+                        </label>
+                        <input type="text" name="searchQualification" id="searchQualification" class="form-control" value="{{$name ?? ''}}">
                     </div>
                     <div class="col">
                         <label for="searchLocation" class="form-label">
@@ -114,7 +120,7 @@
                                 </div>
                                 <div class="col-6 col-xl">
                                         <button type="button" class="btn btn-danger w-100" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
-                                            deactivate
+                                            archive
                                         </button>
                                 </div>
                             </div>
@@ -125,11 +131,11 @@
                         <div class="modal-dialog modal-dialog-centered">
                             <div class="modal-content">
                                 <div class="modal-header">
-                                    <h5 class="modal-title" id="staticBackdropLabel">Deactivate User</h5>
+                                    <h5 class="modal-title" id="staticBackdropLabel">Archive User</h5>
                                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                 </div>
                                 <div class="modal-body">
-                                    Are you sure you want to Deactivate {{$associate->first_name . ' ' . $associate->last_name}}
+                                    Are you sure you want to Archive {{$associate->first_name . ' ' . $associate->last_name}}
                                 </div>
                                 <div class="modal-footer">
                                     <a href="/admin/associate/deactivate/{{$associate->user_id}}">

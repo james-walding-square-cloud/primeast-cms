@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Associate;
 use App\Models\AssociateData;
+use App\Models\AssociateDocs;
 use App\Models\Country;
 use App\Models\Language;
 use App\Models\Sector;
@@ -23,21 +24,17 @@ class AssociateController extends Controller
             $name = $request->searchName ?? null;
             $location = $request->searchLocation ?? null;
             $skill = $request->searchSkill ?? null;
+            $qualification = $request->searchQualification ?? null;
             $language = $request->searchLanguage ?? null;
             $sector = $request->searchSector ?? null;
             $associate = Associate::with('associateData')
-                ->whereHas('associateData')
-                ->when($language != null, function ($query) use ($language) {
-                    foreach ($language as $languageItem) {
-                        $query->whereHas('associateData', function ($q) use ($languageItem) {
-                            $q->where('primary_skillset', 'like', "%$languageItem%")
-                                ->orWhere('primary_language', 'like', "%$languageItem%")
-                                ->orWhere('working_languages', 'like', "%$languageItem%");
-                            return $q;
-                        })
-                            ->orWhere('known_languages', 'like', "%$languageItem%");
-                        return $query;
-                    }
+                ->when($language != null ,function ($query) use ($language) {
+                    $query->whereHas('associateData', function ($q) use ($language) {
+                        foreach ($language as $languageItem) {
+                            $q->where('working_languages', 'like', "%$languageItem%");
+                        }
+                        return $q;
+                    });
                 })
                 ->when($name != null ,function ($query) use ($name) {
                     $query->where('first_name', 'like', "%$name%")
@@ -48,7 +45,6 @@ class AssociateController extends Controller
                     foreach ($skill as $skillItem) {
                         $query->whereHas('associateData', function ($q) use ($skillItem) {
                             $q->where('primary_skillset', 'like', "%$skillItem%")
-                                ->orWhere('educational_qualifications', 'like', "%$skillItem%")
                                 ->orWhere('secondary_skillsets', 'like', "%$skillItem%")
                                 ->orWhere('awards', 'like', "%$skillItem%")
                                 ->orWhere('primary_coaching_accreditations', 'like', "%$skillItem%")
@@ -61,6 +57,13 @@ class AssociateController extends Controller
                             ->orWhere('search_secondary_skillsets', 'like', "%$skillItem%");
                         return $query;
                     }
+                })
+                ->when($qualification != null ,function ($query) use ($qualification) {
+                    $query->whereHas('associateData', function ($q) use ($qualification) {
+                            $q->where('educational_qualifications', 'like', "%$qualification%");
+                        return $q;
+                    });
+                    return $query;
                 })
                 ->when($location != null, function ($query) use ($location) {
                     $query->where('address1', 'like', "%$location%")
@@ -86,10 +89,15 @@ class AssociateController extends Controller
                 ->paginate(10);
         } else {
             $associate = Associate::with('associateData')
-                ->whereHas('associateData')
                 ->where('active' , 1)
                 ->paginate(10);
+
         }
+
+
+
+//        $this->knownlanguages();
+
         return view('associate/index', [
             'associates' => $associate,
             'languages' => $languages,
@@ -99,6 +107,7 @@ class AssociateController extends Controller
             'location' => $request->searchLocation ?? null,
             'skill' => $request->searchSkill ?? null,
             'language' => $request->searchLanguage ?? null,
+            'qualification' => $request->searchQualification ?? null,
         ]);
     }
 
@@ -151,6 +160,20 @@ class AssociateController extends Controller
                     'language' => $languageItem,
                 ]);
             }
+        }
+    }
+
+    public function knownlanguages() {
+        $associates = Associate::whereHas('associateData')->with('associateData')->take(10)->get();
+        foreach ($associates as $associate) {
+            $languages = [];
+            if (isset($associate->associateData->primary_language)) {
+                $languages[] = $associate->associateData->primary_language;
+            }
+            if (isset($associate->associateData->working_languages)) {
+
+            }
+
         }
     }
 
@@ -275,6 +298,10 @@ class AssociateController extends Controller
             ->where('user_id', $user_id)
             ->first();
 
+        $associate->associateData = $associate->associateData->getUpdatedValues($associate->associateData);
+
+
+
         $countries = Country::get();
         $selected_country = $associate->country;
 
@@ -301,6 +328,7 @@ class AssociateController extends Controller
 
     public function profile($user_id) {
         $associate = Associate::with('associateData')
+            ->with('AssociateDocs')
             ->where('user_id', $user_id)
             ->first();
 
@@ -374,65 +402,14 @@ class AssociateController extends Controller
         $associate = Associate::with('associateData')->where('user_id', $user_id)->first();
 
 
-        Associate::where('user_id', $user_id)
-            ->update([
-                'title' => $request->title ?? $associate->title,
-                'first_name' => $request->firstName ?? $associate->first_name,
-                'last_name' => $request->lastName ?? $associate->last_name,
-                'job_role' => $request->jobRole ?? $associate->job_role,
-                'department' => $request->department ?? $associate->department,
-                'address1' => $request->address1 ?? $associate->address1,
-                'address2' => $request->address2 ?? $associate->address2,
-                'address3' => $request->address3 ?? $associate->address3,
-                'city' => $request->city ?? $associate->city,
-                'county' => $request->county ?? $associate->county,
-                'country' => $request->country ?? $associate->country,
-                'postcode' => $request->postcode ?? $associate->postcode,
-                'phone_office' => $request->phoneOffice ?? $associate->phone_office,
-                'phone_home' => $request->phoneHome ?? $associate->phone_home,
-                'phone_mobile' => $request->phoneMobile ?? $associate->phone_mobile,
-                'emergency_contact_name' => $request->emergencyContactName ?? $associate->emrgency_contact_name,
-                'emergency_contact_phone' => $request->emergencyContactPhone ?? $associate->emrgency_contact_phone,
-                'emergency_contact_email' => $request->emergencyContactEmail ?? $associate->emrgency_contact_email,
-                'known_languages' => $request->workingLanguages ?? $associate->associateData->working_languages,
-                'search_qualifications' => $request->educationalQualifications ?? $associate->associateData->educational_qualifications,
-                'search_primary_skillset' => $request->primarySkillset ?? $associate->associateData->primary_skillset,
-                'search_secondary_skillsets' => $request->secondarySkillset ?? $associate->associateData->secondary_skillsets,
-                'date_of_birth' => $request->dateOfBirth ?? $associate->date_of_birth,
-                'updated_at' => Carbon::now(),
-            ]);
-
         AssociateData::where('user_id', $user_id)
             ->update([
-                'areas_of_interest' => $request->areasOfInterest ?? $associate->associateData->areas_of_interest,
-                'primary_skillset' => $request->primarySkillset ?? $associate->associateData->primary_skillset,
-                'secondary_skillsets' => $request->secondarySkillset ?? $associate->associateData->secondary_skillsets,
-                'primary_language' => $request->primaryLanguage ?? $associate->associateData->primary_language,
-                'working_languages' => $request->workingLanguages ?? $associate->associateData->working_languages,
-                'sectors_worked_in' => $request->sectors ?? $associate->associateData->sectors_worked_in,
-                'geographical_experience' => $request->geographicalExperience ?? $associate->associateData->geographical_experience,
-                'mobility' => $request->mobility ?? $associate->associateData->mobility,
-                'mobility_details' => $request->mobiltyDetails ?? $associate->associateData->mobility_details,
-                'educational_qualifications' => $request->educationalQualifications ?? $associate->associateData->educational_qualifications,
-                'awards' => $request->awards ?? $associate->associateData->awards,
-                'fees_per_day' => $request->feesPerDay ?? $associate->associateData->fees_per_day,
-                'elevator_pitch' => $request->elevatorPitch ?? $associate->associateData->elevator_pitch,
-                'interesting_facts' => $request->interestingFacts ?? $associate->associateData->interesting_facts,
-                'areas_of_expertise' => $request->areasOfExpertise ?? $associate->associateData->areas_of_expertise,
-                'primary_accreditations' => $request->primaryAccreditations ?? $associate->associateData->primary_accreditations,
-                'secondary_accreditations' => $request->secondaryAccreditations ?? $associate->associateData->secondary_accreditations,
-                'end_to_end_design' => $request->endToEndDesign ?? $associate->associateData->end_to_end_design,
-                'work_with_preferences' => $request->workWithPreferences ?? $associate->associateData->work_with_preferences,
-                'style_preference' => $request->stylePreference ?? $associate->associateData->style_preference,
-                'content_type' => $request->contentType ?? $associate->associateData->content_type,
-                'industry_experience' => $request->industryExperience ?? $associate->associateData->industry_experience,
-                'room_energy' => $request->roomEnergy ?? $associate->associateData->room_energy,
-                'technologies' => $request->technologies ?? $associate->associateData->technologies,
-                'learning_delivery_methods' => $request->learningDeliveryMethods ?? $associate->associateData->learning_delivery_methods,
-                'primary_coaching_accreditations' => $request->primaryCoachingMethods ?? $associate->associateData->primary_coaching_accreditations,
-                'secondary_coaching_accreditations' => $request->secondaryCoachingMethods ?? $associate->associateData->secondary_coaching_accreditations,
+                'background' => $request->background ?? $associate->associateData->background,
+                'relevant_projects' => $request->relevantProjects ?? $associate->associateData->relevant_projects,
+                'style_and_skillset' => $request->styleAndSkillset ?? $associate->associateData->style_and_skillset,
+                'feedback' => $request->feedback ?? $associate->associateData->feedback,
+                'internal_notes' => $request->internalNotes ?? $associate->associateData->internal_notes,
                 'summary' => $request->summary ?? $associate->associateData->summary,
-                'credentials' => $request->credentials ?? $associate->associateData->credentials,
                 'updated_at' => Carbon::now(),
             ]);
 
