@@ -385,8 +385,10 @@ class AssociateController extends Controller
             ->first();
 
         if (isset($associate->associateData->credentials)) {
-            $associate->associateData->credentials = explode(', ', $associate->associateData->credentials);
+            $credentials = explode(', ', $associate->associateData->credentials);
+            $associate->associateData->credentials = array_slice($credentials, 0, 5, true);
         }
+
         if (isset($associate->associateData->relevant_projects)) {
             $associate->associateData->relevant_projects = explode(', ', $associate->associateData->relevant_projects);
             if (count($associate->associateData->relevant_projects) > 5) {

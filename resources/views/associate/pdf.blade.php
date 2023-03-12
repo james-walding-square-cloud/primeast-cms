@@ -87,13 +87,13 @@
         <!-- Right side -->
         <td class="w-65 p-10">
             <div class="w-100 row m-0 py-2">
-                <h2>Background</h2>
+                <h2 style="padding: 0px; margin: 5px;">Background</h2>
                 <p>{{$associate->associateData->background}}</p>
             </div>
 
             @isset($associate->associateData->relevant_projects)
-                <div class="w-100 row m-0 py-2">
-                    <h2>Relevant Projects</h2>
+                <div class="w-100 row m-0 py-1">
+                    <h2 style="padding: 0px; margin: 5px;">Relevant Projects</h2>
                     @if(isset($associate->projects))
                         <table style="vertical-align: top">
                             <tr style="vertical-align: top">
@@ -117,13 +117,13 @@
                     @endif
                 </div>
             @endisset
-            <div class="w-100 row m-0 py-2">
-                <h2>Style and Skillset</h2>
+            <div class="w-100 row m-0 py-1">
+                <h2 style="padding: 0px; margin: 5px;">Style and Skillset</h2>
                 <p>{{$associate->associateData->style_and_skillset}}</p>
             </div>
             @isset($associate->associateData->credentials)
-                <div class="w-100 row m-0 py-2">
-                    <h2>Credentials</h2>
+                <div class="w-100 row m-0 py-1">
+                    <h2 style="padding: 0px; margin: 5px;">Credentials</h2>
                     <ul>
                         @foreach($associate->associateData->credentials as $credential)
                             <li>{{$credential}}</li>
