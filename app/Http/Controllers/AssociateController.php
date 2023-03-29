@@ -28,6 +28,7 @@ class AssociateController extends Controller
             $language = $request->searchLanguage ?? null;
             $sector = $request->searchSector ?? null;
             $associate = Associate::with('associateData')
+                ->whereHas('associateData')
                 ->when($language != null ,function ($query) use ($language) {
                     $query->whereHas('associateData', function ($q) use ($language) {
                         foreach ($language as $languageItem) {
@@ -37,9 +38,11 @@ class AssociateController extends Controller
                     });
                 })
                 ->when($name != null ,function ($query) use ($name) {
-                    $query->where('first_name', 'like', "%$name%")
-                        ->orWhere('last_name', 'like', "%$name%");
-                    return $query;
+                    $query->where(function($q) use ($name) {
+                        $q->where('first_name', 'like', "%$name%")
+                            ->orWhere('last_name', 'like', "%$name%");
+                        return $q;
+                    });
                 })
                 ->when($skill != null, function ($query) use ($skill){
                     foreach ($skill as $skillItem) {
@@ -66,14 +69,15 @@ class AssociateController extends Controller
                     return $query;
                 })
                 ->when($location != null, function ($query) use ($location) {
-                    $query->where('address1', 'like', "%$location%")
-                        ->orWhere('address2', 'like', "%$location%")
-                        ->orWhere('address3', 'like', "%$location%")
-                        ->orWhere('city', 'like', "%$location%")
-                        ->orWhere('county', 'like', "%$location%")
-                        ->orWhere('country', 'like', "%$location%")
-                        ->orWhere('postcode', 'like', "%$location%");
-                    return $query;
+                    $query->where(function ($q) use ($location) {
+                        $q->where('address1', 'like', "%$location%")
+                            ->orWhere('address2', 'like', "%$location%")
+                            ->orWhere('address3', 'like', "%$location%")
+                            ->orWhere('city', 'like', "%$location%")
+                            ->orWhere('county', 'like', "%$location%")
+                            ->orWhere('country', 'like', "%$location%")
+                            ->orWhere('postcode', 'like', "%$location%");
+                    });
                 })
                 ->when($sector != null, function ($query) use ($sector) {
                     foreach ($sector as $sectorItem) {
@@ -89,6 +93,7 @@ class AssociateController extends Controller
                 ->paginate(10);
         } else {
             $associate = Associate::with('associateData')
+                ->whereHas('associateData')
                 ->where('active' , 1)
                 ->paginate(10);
 
@@ -96,7 +101,6 @@ class AssociateController extends Controller
 
 
 
-//        $this->knownlanguages();
 
         return view('associate/index', [
             'associates' => $associate,
@@ -298,7 +302,9 @@ class AssociateController extends Controller
             ->where('user_id', $user_id)
             ->first();
 
-        $associate->associateData = $associate->associateData->getUpdatedValues($associate->associateData);
+        if ($associate->associateData) {
+            $associate->associateData = $associate->associateData->getUpdatedValues($associate->associateData);
+        }
 
 
 

@@ -35,7 +35,7 @@
                         <label for="searchQualifications" class="form-label">
                             Qualifications
                         </label>
-                        <input type="text" name="searchQualification" id="searchQualification" class="form-control" value="{{$name ?? ''}}">
+                        <input type="text" name="searchQualification" id="searchQualification" class="form-control" value="{{$qualification ?? ''}}">
                     </div>
                     <div class="col">
                         <label for="searchLocation" class="form-label">
