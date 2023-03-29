@@ -661,9 +661,36 @@
                     </div>
                 </div>
             </div>
-            <div class="col-2 float-end px-5 py-1">
-                <button type="submit" class="btn btn-success w-100">Save</button>
+            <div class="col-4 row float-end px-5 py-1">
+                <button type="button" class="btn btn-primary col me-1" data-bs-toggle="modal" data-bs-target="#docsModal">View Documents</button>
+                <button type="submit" class="btn btn-success col">Save</button>
             </div>
         </fieldset>
     </form>
+    <div class="modal fade" id="docsModal" tabindex="-1" role="dialog" aria-labelledby="docsModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="docsModalLabel">{{$associate->first_name . ' ' . $associate->last_name ."'s Documents"}}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        @foreach($associate->AssociateDocs as $doc)
+                            <div class="col-6 col-md-3">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h5 class="card-title">{{$doc->name}}</h5>
+                                        <p class="card-text">Date Uploaded: {{$doc->date}}</p>
+                                        <p class="card-text">Renewal Date: {{$doc->renewal_date}}</p>
+                                        <a href="{{'https://www.primeast.com'.$doc->location}}" target="_blank" class="btn btn-primary">View Document</a>
+                                    </div>
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 @endsection
