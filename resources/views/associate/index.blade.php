@@ -41,8 +41,11 @@
                         <label for="searchLocation" class="form-label">
                             Location
                         </label>
-                        <input type="text" name="searchLocation" id="searchLocation" class="form-control" value="{{$location ?? ''}}">
-                    </div>
+                        <select class="form-control" id="searchLocation" name="searchLocation[]" multiple="multiple">
+                            @foreach($countries as $country)
+                                <option value="{{$country}}">{{$country}}</option>
+                            @endforeach
+                        </select>                    </div>
                     <div class="col">
                         <label for="searchSector" class="form-label">
                             Sector
@@ -168,6 +171,7 @@
             $('#searchLanguage').select2();
             $('#searchSector').select2();
             $('#searchSkill').select2();
+            $('#searchLocation').select2();
         });
 
         $(document).on('click', '.pagination li a', function (e) {
