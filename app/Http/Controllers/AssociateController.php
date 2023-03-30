@@ -19,6 +19,7 @@ class AssociateController extends Controller
         $languages = Language::get()->pluck('language');
         $sectors = Sector::get()->pluck('sector');
         $skills = Skill::get()->pluck('title');
+        $countries = Country::get()->pluck('name');
 
         if (!empty($request->all())) {
             $name = $request->searchName ?? null;
@@ -69,15 +70,11 @@ class AssociateController extends Controller
                     return $query;
                 })
                 ->when($location != null, function ($query) use ($location) {
-                    $query->where(function ($q) use ($location) {
-                        $q->where('address1', 'like', "%$location%")
-                            ->orWhere('address2', 'like', "%$location%")
-                            ->orWhere('address3', 'like', "%$location%")
-                            ->orWhere('city', 'like', "%$location%")
-                            ->orWhere('county', 'like', "%$location%")
-                            ->orWhere('country', 'like', "%$location%")
-                            ->orWhere('postcode', 'like', "%$location%");
-                    });
+                    foreach ($location as $locationItem) {
+                        $query->where(function ($q) use ($locationItem) {
+                            $q->where('country', 'like', "%$locationItem%");
+                        });
+                    }
                 })
                 ->when($sector != null, function ($query) use ($sector) {
                     foreach ($sector as $sectorItem) {
@@ -107,6 +104,7 @@ class AssociateController extends Controller
             'languages' => $languages,
             'sectors' => $sectors,
             'skills' => $skills,
+            'countries' => $countries,
             'name' => $request->searchName ?? null,
             'location' => $request->searchLocation ?? null,
             'skill' => $request->searchSkill ?? null,
