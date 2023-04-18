@@ -122,7 +122,7 @@
                                     </a>
                                 </div>
                                 <div class="col-6 col-xl">
-                                        <button type="button" class="btn btn-danger w-100" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
+                                        <button type="button" class="btn btn-danger w-100" data-bs-toggle="modal" data-bs-target="#staticBackdrop{{$associate->user_id}}">
                                             archive
                                         </button>
                                 </div>
@@ -130,7 +130,7 @@
                         </td>
                     </tr>
                     <!-- Modal -->
-                    <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                    <div class="modal fade" id="staticBackdrop{{$associate->user_id}}" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
                         <div class="modal-dialog modal-dialog-centered">
                             <div class="modal-content">
                                 <div class="modal-header">
@@ -138,6 +138,9 @@
                                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                 </div>
                                 <div class="modal-body">
+                                    @php
+                                        dump($associate)
+                                    @endphp
                                     Are you sure you want to Archive {{$associate->first_name . ' ' . $associate->last_name}}
                                 </div>
                                 <div class="modal-footer">
