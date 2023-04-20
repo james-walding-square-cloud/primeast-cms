@@ -30,6 +30,17 @@ Route::prefix('admin')->middleware(['auth', 'isAdmin'])->group(function () {
     Route::get('/update/sectors', ('AssociateController@sectorsUpdate'));
     Route::get('/update/skills', ('AssociateController@skillsUpdate'));
     Route::get('/update/knownlanguages', ('AssociateController@knownLanguages'));
+
+
+    //Banners
+    Route::get('/banner/index', ('BannerController@index'));
+    Route::get('/banner/edit/{banner_id}', ('BannerController@edit'));
+    Route::get('/banner/create', ('BannerController@create'));
+    Route::post('/banner/store', ('BannerController@store'));
+    Route::put('/banner/imageUpdate/{user_id}', ('AssociateController@imageUpdate'));
+    Route::get('/banner/deactivate/{user_id}', ('AssociateController@deactivate'));
+
+
 });
 Auth::routes();
 

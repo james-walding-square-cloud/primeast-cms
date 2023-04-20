@@ -138,9 +138,6 @@
                                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                 </div>
                                 <div class="modal-body">
-                                    @php
-                                        dump($associate)
-                                    @endphp
                                     Are you sure you want to Archive {{$associate->first_name . ' ' . $associate->last_name}}
                                 </div>
                                 <div class="modal-footer">
